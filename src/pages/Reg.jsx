@@ -15,7 +15,7 @@ const Reg = () => {
     e.preventDefault();
     try {
       const newUser = await axios.post(
-        "http://localhost:5000/log/new",
+        `${import.meta.env.VITE_API_URL}/log/new`,
         regInfo
       );
       if (newUser.status === 200) {

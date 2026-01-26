@@ -14,7 +14,7 @@ const Header = ({openDrawer}) => {
      // logoutt - a distinct name for the context api's prop function and a function to log out the user, hitting the backend api
      const logoutt = async () => {
         try{
-          const logOut = await axios.get('http://localhost:5000/log/logout', {
+          const logOut = await axios.get(`${import.meta.env.VITE_API_URL}/log/logout`, {
             withCredentials: true
           })
           console.log(logOut);

@@ -17,7 +17,7 @@ const Reg = () => {
     e.preventDefault();
     try {
       const logUser = await axios.post(
-        "http://localhost:5000/log/auth",
+        `${import.meta.env.VITE_API_URL}/log/auth`,
         logInfo,
         {
           withCredentials: true,

@@ -10,12 +10,12 @@ export const UserProvider = ({ children }) => {
   // the function to trigger the endpoint to get the name.
   const getUser = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/user/name", {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/name`, {
         withCredentials: true,
       });
-      console.log(response.data.user.username);
+      // console.log(response.data.user.username);
       await setName(response.data.user.username);
-      console.log(response.data);
+      // console.log(response.data);
     } catch (e) {
       console.error("Failed to fetch user:", e.response?.data || e.message);
     }

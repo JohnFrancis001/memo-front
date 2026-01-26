@@ -17,7 +17,7 @@ const UpdateNote = ({fetchNotes, selectedNote, updateSlide, updateOpen }) => {
       e.preventDefault();
       try {
           const updNote_res = await axios.put(
-              `http://localhost:5000/note/update/${selectedNote._id}`,
+              `${import.meta.env.VITE_API_URL}/note/update/${selectedNote._id}`,
               note,
               {
           withCredentials: true,

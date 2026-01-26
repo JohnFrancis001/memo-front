@@ -12,7 +12,7 @@ const AddNote = ({ addSlide, addOpen, fetchNotes }) => {
     {/* To not trigger the page */}
     e.preventDefault();
     try {
-      const addData = await axios.post("http://localhost:5000/note/add", data, {
+      const addData = await axios.post(`${import.meta.env.VITE_API_URL}/note/add`, data, {
         withCredentials: true,
       });
       if (!addData) console.log("Note is not added,something is wrong error");

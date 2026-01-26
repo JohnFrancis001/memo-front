@@ -43,7 +43,7 @@ const Main = () => {
   const verifyAuth = async (e) => {
     try {
       setLoading(true);
-      const notes_res = await axios.get("http://localhost:5000/note", {
+      const notes_res = await axios.get(`${import.meta.env.VITE_API_URL}/note`, {
         withCredentials: true,
       });
       if (notes_res.status === 200) {

@@ -18,7 +18,7 @@ const User = () => {
     console.log(name);
     try {
       const update_res = await axios.put(
-        "http://localhost:5000/user/update",
+        `${import.meta.env.VITE_API_URL}/user/update`,
         userData,
         { withCredentials: true }
       );

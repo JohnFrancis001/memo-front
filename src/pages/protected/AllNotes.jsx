@@ -25,7 +25,7 @@ const AllNotes = () => {
   const verifyAuth = async (e) => {
     try {
       setLoading(true);
-      const notes_res = await axios.get("http://localhost:5000/note/all", {
+      const notes_res = await axios.get(`${import.meta.env.VITE_API_URL}/note/all`, {
         withCredentials: true,
       });
       if (notes_res.status === 200) {
@@ -59,14 +59,10 @@ const AllNotes = () => {
   return (
     <div className="relative overflow-hidden layout-grid">
       <div
-        className={`grid-drawer 
-  ${drawerOpen ? "translate-x-0" : "-translate-x-full"} 
-  transition-transform duration-300 ease-in-out
-  lg:translate-x-0
-  ${drawerOpen ? "fixed top-0 left-0 z-10 h-full w-full" : "relative"}
+        className={`grid-drawer ${drawerOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 ease-in-out lg:translate-x-0 ${drawerOpen ? "fixed top-0 left-0 z-10 h-full w-full" : "relative"}
 `}
       >
-        <Drawer openDrawer={openDrawer} />
+        <Drawer openDrawer={openDrawer} drawerOpen={drawerOpen} />
       </div>
 
       <div className="grid-header">

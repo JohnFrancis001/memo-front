@@ -34,7 +34,7 @@ export const UIProvider = ({ children }) => {
     // e.preventDefault();
     try {
       const delNote_res = await axios.delete(
-        `http://localhost:5000/note/delete/${selectedId}`,
+        `${import.meta.env.VITE_API_URL}/note/delete/${selectedId}`,
         { withCredentials: true }
       );
       if (delNote_res.status !== 200) {
