@@ -81,7 +81,7 @@ const Reg = () => {
           Sign In
         </button>
 
-        <Link to={"/reg"} className="text-center">
+        <Link to={"/"} className="text-center">
           Don't Have An Account, <b>Register!</b>
         </Link>
       </form>
