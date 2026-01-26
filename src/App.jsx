@@ -17,8 +17,8 @@ function App() {
     <BrowserRouter>
     <Toaster position="top-center" reverseOrder={false} />
       <Routes>
-        <Route path="/reg" element={<Reg/>} />
-        <Route path="/log" element={<Log/>}/>
+        <Route path="/" element={<Reg/>} />
+        <Route path="/" element={<Log/>}/>
         <Route path="/" element={<ConfirmBox/>}/>
 
         // Protected Routes
