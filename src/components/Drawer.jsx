@@ -1,58 +1,118 @@
 import { MdClose } from "react-icons/md";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/Username";
 
-// The Drawer Component with toggling effect for small screen sizes and static ( no toggle effect ) for large ones.
 const Drawer = ({ openDrawer, drawerOpen }) => {
-  // name is used from context api to get the current user's name to show only on small devices for better UI experience. 
-  const { name } = useUser();
 
+  const { name } = useUser();
   const navigate = useNavigate();
 
-  //This function is responsible for handling the different navigation paths when clicked on the drawer options and set the toggle state back to false to slide back
   const handleNavClick = (path) => {
     navigate(path);
-    // set the state true if drawer default state set to false due re-render specifically of small screen sizes
-    if (window.innerWidth < 1080 && !drawerOpen) {
-      openDrawer(); // Always call on small size
+
+    if (window.innerWidth < 1080 && drawerOpen) {
+      openDrawer();
     }
   };
 
   return (
-    <div className="absolute h-full w-full lg:h-full lg:w-64 lg:relative ">
-      <aside className="bg-gradient-to-t from-teal-200 via-teal-700 to-blue-900 h-full w-[95%] box-border overflow-hidden relative lg:h-full lg:w-full">
+    <div className="absolute h-full w-full lg:w-64 lg:relative">
+      
+      <aside
+        className={`
+        h-full w-[85%] sm:w-[70%] lg:w-full
+        bg-white
+        border-r
+        shadow-xl
+        transition-transform duration-300 ease-in-out
+        flex flex-col
+        ${drawerOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+        `}
+      >
+        {/* Close Button (Mobile) */}
         <MdClose
-          color="red"
           onClick={openDrawer}
-          size={40}
-          className="absolute right-5 top-5 addIcon cursor-pointer lg:hidden"
+          size={26}
+          className="
+          absolute right-4 top-4
+          text-[#0d47a1]
+          cursor-pointer
+          lg:hidden"
         />
 
-        <div className="flex items-start justify-around flex-col h-20 ml-5 lg:items-center">
-          <h1 className="lg:hidden text-white mt-2">{name}</h1>
-          <h2 className="text-4xl lg:mt-12 text-white">Menu</h2>
+        {/* Header */}
+        <div className="px-6 pt-6 pb-4 border-b">
+          <h1 className="lg:hidden text-sm text-gray-500">
+            {name}
+          </h1>
+
+          <h2 className="text-xl font-semibold text-[#0d47a1]">
+            Dashboard
+          </h2>
         </div>
 
-        <ul className="h-full flex flex-col items-start mt-32 text-xl w-full">
+        {/* MENU (takes available height) */}
+        <ul className="flex flex-col mt-4 flex-grow">
+
           <li
             onClick={() => handleNavClick("/main")}
-            className="menu_list h-20 flex_row_center"
+            className="
+            px-6 py-3
+            cursor-pointer
+            text-gray-700
+            hover:bg-blue-50
+            hover:text-[#0d47a1]
+            transition
+            font-medium"
           >
-            My_Notes
+            My Notes
           </li>
+
           <li
             onClick={() => handleNavClick("/all")}
-            className="menu_list h-20 flex_row_center"
+            className="
+            px-6 py-3
+            cursor-pointer
+            text-gray-700
+            hover:bg-blue-50
+            hover:text-[#0d47a1]
+            transition
+            font-medium"
           >
-            All_Notes
+            All Notes
           </li>
+
           <li
             onClick={() => handleNavClick("/user")}
-            className="menu_list h-20 flex_row_center"
+            className="
+            px-6 py-3
+            cursor-pointer
+            text-gray-700
+            hover:bg-blue-50
+            hover:text-[#0d47a1]
+            transition
+            font-medium"
           >
-            User_Info
+            User Info
           </li>
+
         </ul>
+
+        {/* FOOTER AREA (fills empty space beautifully) */}
+        <div className="border-t px-6 py-4">
+
+          <div className="flex flex-col gap-1">
+            <p className="text-sm font-medium text-gray-700">
+              JOHN FRANCIS
+            </p>
+
+            <p className="text-xs text-gray-500">
+              Memo System • v1.0
+            </p>
+          </div>
+
+        </div>
+
       </aside>
     </div>
   );

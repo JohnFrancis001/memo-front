@@ -2,81 +2,195 @@ import { useState } from "react";
 import { MdClose } from "react-icons/md";
 import axios from "axios";
 
-{/* A component to add note, Even though it is note reused after the main page. Just for practice to make reusable components */}
 const AddNote = ({ addSlide, addOpen, fetchNotes }) => {
-  {/* A state of data that contains the info about the uploading note */}
-  const [data, setData] = useState({});
 
-  {/* This function helps to trigger the backend endpoint to add in the DB */}
+  const [data, setData] = useState({
+    title: "",
+    description: ""
+  });
+
+  const [file, setFile] = useState(null);
+
   const Add = async (e) => {
-    {/* To not trigger the page */}
     e.preventDefault();
+
     try {
-      const addData = await axios.post(`${import.meta.env.VITE_API_URL}/note/add`, data, {
-        withCredentials: true,
-      });
-      if (!addData) console.log("Note is not added,something is wrong error");
-      console.log("Working Fine, Note Added");
-      {/* A prop function to help slide back the AddNote Component */}
+      const formData = new FormData();
+
+      formData.append("title", data.title);
+      formData.append("description", data.description);
+
+      if (file) {
+        formData.append("file", file);
+      }
+
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/note/add`,
+        formData,
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        }
+      );
+
       addSlide();
-      {/* A prop function to help with the fetching of recent data on the main page */}
       fetchNotes();
-    } catch (e) {
-      console.log(e);
+
+      // Reset Form
+      setData({ title: "", description: "" });
+      setFile(null);
+
+    } catch (error) {
+      console.log(error);
     }
   };
 
   return (
-      <div
-      className={`h-screen flex justify-center items-center ${
-          addOpen ? "translate-y-0" : "-translate-y-full"
-        } fixed top-0 left-0 w-full z-50 bg-white p-4 shadow-lg
-        transform transition-transform duration-300 ease-in-out`}
-        >
+    <div
+      className={`
+      fixed inset-0 z-50
+      flex items-center justify-center
+      bg-black/30 backdrop-blur-sm
+      transition-all duration-300
+      ${addOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}
+      `}
+    >
+      {/* Modal Box */}
       <form
         onSubmit={Add}
-        className="h-[90%] lg:h-[80%] w-[90%] lg:w-[70%] bg-slate-100 flex justify-center items-center flex-col rounded-lg gap-2 relative"
+        className="
+        relative bg-white rounded-2xl shadow-2xl
+        w-[95%] sm:w-[90%] lg:w-[55%]
+        h-auto max-h-[90%]
+        p-6
+        flex flex-col gap-6
+        border"
       >
-        <MdClose
-          color="red"
+        {/* Close Button */}
+        <button
+          type="button"
           onClick={addSlide}
-          size={30}
-          className="absolute top-5 right-5 addIcon cursor-pointer"
-        />
-        <div className="flex flex-col gap-2 w-[50%] lg:w-[35%]">
-          <label htmlFor="title">Title</label>
+          className="
+          absolute top-4 right-4
+          bg-[#0d47a1] hover:bg-blue-900
+          p-2 rounded-full text-white
+          transition"
+        >
+          <MdClose size={20} />
+        </button>
+
+        {/* Header */}
+        <h2
+          className="
+          text-xl lg:text-2xl font-semibold
+          text-[#0d47a1]"
+        >
+          Add New Note
+        </h2>
+
+        {/* Title Input */}
+        <div className="flex flex-col gap-1">
+          <label
+            htmlFor="title"
+            className="text-sm text-gray-600"
+          >
+            Title
+          </label>
+
           <input
-            onChange={(e) => {
-              setData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-            }}
-            className="px-2 py-1 outline-none"
             type="text"
             name="title"
             id="title"
-            placeholder="Title"
+            placeholder="Enter note title"
+            value={data.title}
+            onChange={(e) =>
+              setData((prev) => ({
+                ...prev,
+                [e.target.name]: e.target.value
+              }))
+            }
+            className="
+            border rounded-lg px-3 py-2
+            outline-none
+            focus:ring-2 focus:ring-blue-300
+            focus:border-[#0d47a1]"
+            required
           />
         </div>
-        <div className="flex flex-col gap-2 w-[50%] lg:w-[35%]">
-          <label htmlFor="description">Note</label>
+
+        {/* Description Input */}
+        <div className="flex flex-col gap-1">
+          <label
+            htmlFor="description"
+            className="text-sm text-gray-600"
+          >
+            Note Description
+          </label>
+
           <textarea
-            onChange={(e) => {
-              setData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-            }}
-            className="max-h-40 lg:max-h-60 p-2 outline-none"
             name="description"
             id="description"
-            placeholder="Note"
-          ></textarea>
-        </div>
-        <div className="flex flex-col gap-2 w-[50%] lg:w-[35%]">
-          <input
-            onChange={(e) => {
-              setData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-            }}
-            type="file"
+            placeholder="Write your note here..."
+            value={data.description}
+            onChange={(e) =>
+              setData((prev) => ({
+                ...prev,
+                [e.target.name]: e.target.value
+              }))
+            }
+            rows="5"
+            className="
+            border rounded-lg p-3
+            resize-none
+            outline-none
+            focus:ring-2 focus:ring-blue-300
+            focus:border-[#0d47a1]"
+            required
           />
         </div>
-        <button className="card w-[50%] lg:w-[35%]">Add Note</button>
+
+        {/* File Upload */}
+        <div className="flex flex-col gap-1">
+          <label className="text-sm text-gray-600">
+            Attach File (Optional)
+          </label>
+
+          <input
+            type="file"
+            onChange={(e) => setFile(e.target.files[0])}
+            className="
+            border rounded-lg
+            px-3 py-2
+            text-sm
+            cursor-pointer
+            file:mr-4
+            file:border-0
+            file:bg-[#0d47a1]
+            file:text-white
+            file:px-4
+            file:py-2
+            file:rounded-md
+            hover:file:bg-blue-900"
+          />
+        </div>
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          className="
+          mt-2
+          bg-[#0d47a1]
+          hover:bg-blue-900
+          text-white
+          py-2.5 rounded-lg
+          font-medium
+          transition
+          shadow-md"
+        >
+          Add Note
+        </button>
       </form>
     </div>
   );

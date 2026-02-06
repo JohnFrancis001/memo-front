@@ -35,15 +35,8 @@ const User = () => {
 
   return (
     <div className="relative overflow-hidden layout-grid">
-      <div
-        className={`grid-drawer 
-  ${drawerOpen ? "translate-x-0" : "-translate-x-full"} 
-  transition-transform duration-300 ease-in-out
-  lg:translate-x-0
-  ${drawerOpen ? "fixed top-0 left-0 z-10 h-full w-full" : "relative"}
-`}
-      >
-        <Drawer openDrawer={openDrawer} />
+      <div className={`grid-drawer ${drawerOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 ease-in-out lg:translate-x-0 ${drawerOpen ? "fixed top-0 left-0 z-10 h-full w-full" : "relative"}`}>
+        <Drawer openDrawer={openDrawer} drawerOpen={drawerOpen} />
       </div>
 
       <div className="grid-header">

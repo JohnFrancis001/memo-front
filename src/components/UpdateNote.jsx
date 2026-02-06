@@ -2,94 +2,209 @@ import { useState, useEffect } from "react";
 import { MdClose } from "react-icons/md";
 import axios from "axios";
 
-// The Update Note component for updating the selected note - fetched from Main page
-const UpdateNote = ({fetchNotes, selectedNote, updateSlide, updateOpen }) => {
-  // state for saving note info for updation
-  const [note, setNote] = useState({});
+// Update Note Component
+const UpdateNote = ({ fetchNotes, selectedNote, updateSlide, updateOpen }) => {
 
+  const [data, setData] = useState({
+    title: "",
+    description: ""
+  });
+
+  const [file, setFile] = useState(null);
+
+  // Load selected note data
   useEffect(() => {
-    setNote(selectedNote);
-  }, [selectedNote])
-
-  
-  // The function - logic, to trigger the endpoint for updation via context api state fetched through Main page
-  const updNote = async (e) => {
-      e.preventDefault();
-      try {
-          const updNote_res = await axios.put(
-              `${import.meta.env.VITE_API_URL}/note/update/${selectedNote._id}`,
-              note,
-              {
-          withCredentials: true,
-        }
-    );
-    if (!updNote_res) console.log("Note not updated");
-    if (updNote_res.status === 200) {
-        console.log("working properly, data updated");
-        updateSlide();
-        fetchNotes();
+    if (selectedNote) {
+      setData({
+        title: selectedNote.title || "",
+        description: selectedNote.description || "",
+      });
     }
-} catch (e) {
-    console.log(e);
-}
-};
+  }, [selectedNote]);
+
+  // Update Handler
+  const Update = async (e) => {
+    e.preventDefault();
+
+    try {
+      const formData = new FormData();
+
+      formData.append("title", data.title);
+      formData.append("description", data.description);
+
+      if (file) {
+        formData.append("file", file);
+      }
+
+      await axios.put(
+        `${import.meta.env.VITE_API_URL}/note/update/${selectedNote._id}`,
+        formData,
+        {
+          withCredentials: true,
+            headers: {
+              "Content-Type": "multipart/form-data"
+            }
+        }
+      );
+
+      updateSlide();
+      fetchNotes();
+
+      // Reset File After Update
+      setFile(null);
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div
-      className={`h-screen flex justify-center items-center ${
-        updateOpen ? "translate-y-0" : "-translate-y-full"
-      } fixed top-0 left-0 w-full z-50 bg-white p-4 shadow-lg
-        transform transition-transform duration-300 ease-in-out`}
+      className={`
+      fixed inset-0 z-50
+      flex items-center justify-center
+      bg-black/30 backdrop-blur-sm
+      transition-all duration-300
+      ${updateOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}
+      `}
     >
-      {/* Trigger point to update note through the form */}
+      {/* Modal Box */}
       <form
-        onSubmit={updNote}
-        className="h-[90%] lg:h-[80%] w-[90%] lg:w-[70%] bg-slate-100 flex justify-center items-center flex-col rounded-lg gap-2 relative"
+        onSubmit={Update}
+        className="
+        relative bg-white rounded-2xl shadow-2xl
+        w-[95%] sm:w-[90%] lg:w-[55%]
+        h-auto max-h-[90%]
+        p-6
+        flex flex-col gap-6
+        border"
       >
-        <MdClose
-          color="red"
+
+        {/* Close Button */}
+        <button
+          type="button"
           onClick={updateSlide}
-          size={30}
-          className="absolute top-5 right-5 addIcon cursor-pointer"
-        />
-        <div className="flex flex-col gap-2 w-[50%] lg:w-[35%]">
-          <label htmlFor="title">Title</label>
+          className="
+          absolute top-4 right-4
+          bg-[#0d47a1] hover:bg-blue-900
+          p-2 rounded-full text-white
+          transition"
+        >
+          <MdClose size={20} />
+        </button>
+
+        {/* Header */}
+        <h2
+          className="
+          text-xl lg:text-2xl font-semibold
+          text-[#0d47a1]"
+        >
+          Update Note
+        </h2>
+
+        {/* Title Input */}
+        <div className="flex flex-col gap-1">
+          <label
+            htmlFor="title"
+            className="text-sm text-gray-600"
+          >
+            Title
+          </label>
+
           <input
-            value={note.title || ""}
-            onChange={(e) =>
-              setNote((prev) => ({ ...prev, [e.target.name]: e.target.value }))
-            }
-            className="px-2 py-1 outline-none"
             type="text"
             name="title"
             id="title"
-            placeholder="Title"
+            placeholder="Enter note title"
+            value={data.title}
+            onChange={(e) =>
+              setData((prev) => ({
+                ...prev,
+                [e.target.name]: e.target.value
+              }))
+            }
+            className="
+            border rounded-lg px-3 py-2
+            outline-none
+            focus:ring-2 focus:ring-blue-300
+            focus:border-[#0d47a1]"
+            required
           />
         </div>
-        <div className="flex flex-col gap-2 w-[50%] lg:w-[35%]">
-          <label htmlFor="description">Note</label>
+
+        {/* Description Input */}
+        <div className="flex flex-col gap-1">
+          <label
+            htmlFor="description"
+            className="text-sm text-gray-600"
+          >
+            Note Description
+          </label>
+
           <textarea
-            value={note.description || ""}
-            onChange={(e) =>
-              setNote((prev) => ({ ...prev, [e.target.name]: e.target.value }))
-            }
-            className="max-h-40 lg:max-h-60 p-2 outline-none"
             name="description"
             id="description"
-            placeholder="Note"
-          >
-          </textarea>
-        </div>
-        <div className="flex flex-col gap-2 w-[50%] lg:w-[35%]">
-          <input
+            placeholder="Write your note here..."
+            value={data.description}
             onChange={(e) =>
-              setNote((prev) => ({ ...prev, file: e.target.files[0] }))
+              setData((prev) => ({
+                ...prev,
+                [e.target.name]: e.target.value
+              }))
             }
-            name="file"
-            type="file"
+            rows="5"
+            className="
+            border rounded-lg p-3
+            resize-none
+            outline-none
+            focus:ring-2 focus:ring-blue-300
+            focus:border-[#0d47a1]"
+            required
           />
         </div>
-        <button className="card w-[50%] lg:w-[35%]">Update the Note</button>
+
+        {/* File Upload */}
+        <div className="flex flex-col gap-1">
+          <label className="text-sm text-gray-600">
+            Replace File (Optional)
+          </label>
+
+          <input
+            type="file"
+            name="file"
+            onChange={(e) => setFile(e.target.files[0])}
+            className="
+            border rounded-lg
+            px-3 py-2
+            text-sm
+            cursor-pointer
+            file:mr-4
+            file:border-0
+            file:bg-[#0d47a1]
+            file:text-white
+            file:px-4
+            file:py-2
+            file:rounded-md
+            hover:file:bg-blue-900"
+          />
+        </div>
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          className="
+          mt-2
+          bg-[#0d47a1]
+          hover:bg-blue-900
+          text-white
+          py-2.5 rounded-lg
+          font-medium
+          transition
+          shadow-md"
+        >
+          Update Note
+        </button>
+
       </form>
     </div>
   );

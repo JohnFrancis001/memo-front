@@ -81,7 +81,7 @@ const Main = () => {
     setAddOpen((prev) => !prev);
   };
 
-  return (
+  return (//main
     <div className="relative overflow-hidden layout-grid">
       <div>
         <AddNote
@@ -96,15 +96,8 @@ const Main = () => {
           updateOpen={updateOpen}
         />
       </div>
-      <div
-        className={`grid-drawer 
-  ${drawerOpen ? "translate-x-0" : "-translate-x-full"} 
-  transition-transform duration-300 ease-in-out
-  lg:translate-x-0
-  ${drawerOpen ? "fixed top-0 left-0 z-10 h-full w-full" : "relative"}
-`}
-      >
-        <Drawer name={name} openDrawer={openDrawer} />
+      <div className={`grid-drawer ${drawerOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 ease-in-out lg:translate-x-0 ${drawerOpen ? "fixed top-0 left-0 z-10 h-full w-full" : "relative"}`}>
+        <Drawer openDrawer={openDrawer} drawerOpen={drawerOpen} />
       </div>
       <ViewNote
         note={selectedNote}
@@ -129,83 +122,138 @@ const Main = () => {
         <Header name={name} openDrawer={openDrawer} />
       </div>
 
-      <main className="px-4 grid-main mt-10">
-        <div className="flex_row_center">
-          <MdAdd
-            onClick={addSlide}
-            size={100}
-            className="addIcon cursor-pointer"
-          />
+      <main className="px-4 py-6 grid-main">
+
+  {/* Header Row */}
+  <div className="flex justify-between items-center mb-6">
+
+    <h2 className="text-xl font-semibold text-[#0d47a1]">
+      My Notes
+    </h2>
+
+    {/* Add Button */}
+    <button
+      onClick={addSlide}
+      className="
+      flex items-center gap-2
+      bg-[#0d47a1] hover:bg-blue-900
+      text-white px-4 py-2
+      rounded-lg shadow-md
+      transition"
+    >
+      <MdAdd size={22} />
+      Add Note
+    </button>
+
+  </div>
+
+  {/* Notes Grid */}
+  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+
+    {notes.map((note, index) => (
+      <div
+        key={note._id}
+        className="
+        bg-white border rounded-xl p-4
+        shadow-sm hover:shadow-lg
+        transition
+        relative group"
+      >
+
+        {/* Card Header */}
+        <div className="flex justify-between items-center mb-2">
+
+          <span className="text-sm text-gray-400">
+            #{index + 1}
+          </span>
+
+          <span className="text-xs text-gray-500">
+            {new Date(note.createdAt).toLocaleDateString()}
+          </span>
+
         </div>
-        <ul className="list_top rounded p-2">
-          <li className="text-center">S/No</li>
-          <li className="text-center">Autho</li>
-          <li className="text-center">Title</li>
-          <li className="text-center">file</li>
-          <li className="text-center">date</li>
-        </ul>
 
-        {/* NOTE ROW */}
-        {notes.map((note, index) => (
-          <div key={note._id} className="flex mt-5 flex-col relative group">
-            <ul className="list rounded py-2">
-              <li className="text-center">{index + 1}</li>
-              <li className="text-center">
-                <ShortText text={name} limit={4} />
-              </li>
-              <li className="text-center">
-                <ShortText text={note.title} limit={4} />
-              </li>
-              <li className="text-center">
-                <ShortText text={note.file || "No File"} limit={4} />
-              </li>
-              <li className="text-center">
-                {new Date(note.createdAt).toLocaleDateString()}
-              </li>
-            </ul>
+        {/* Title */}
+        <h3 className="text-[#0d47a1] font-semibold mb-1">
+          <ShortText text={note.title} limit={20} />
+        </h3>
 
-            {/* ICONS: hidden by default, visible on hover */}
-            <div
-              className="opacity-0 group-hover:opacity-100 
-                       translate-y-2 group-hover:translate-y-0 
-                       transition-all duration-300 ease-in-out 
-                       bg-white flex_row_center absolute py-2 px-2 m-auto gap-1 
-                       border-2 left-[40%] lg:left-[45%] -top-9 rounded-md"
-            >
-              <FaEdit
-                size={30}
-                color="grey"
-                onClick={() => {
-                  setSelectedNote(note);
-                  handleUpdate();
-                }}
-                className="bg-green-400 hover:bg-green-700 px-1.5 rounded-lg cursor-pointer"
-                title="Update"
-              />
-              <FaTrash
-                size={30}
-                color="white"
-                onClick={() => {
-                  setSelectedId(note._id);
-                  handleDelete();
-                }}
-                className="bg-red-400 hover:bg-red-700 px-1.5 rounded-lg cursor-pointer"
-                title="Delete"
-              />
-              <FaEye
-                size={30}
-                color="black"
-                onClick={() => {
-                  setSelectedNote(note);
-                  viewSlide();
-                }}
-                className="bg-blue-400 hover:bg-blue-700 px-1.5 rounded-lg cursor-pointer"
-                title="View"
-              />
-            </div>
-          </div>
-        ))}
-      </main>
+        {/* Description Preview */}
+        <p className="text-sm text-gray-600 mb-3">
+          <ShortText text={note.description} limit={60} />
+        </p>
+
+        {/* File Badge */}
+        <div className="mb-4">
+          <span
+            className="
+            text-xs px-3 py-1
+            bg-blue-50 text-[#0d47a1]
+            rounded-full"
+          >
+            {note.file ? "File Attached" : "No File"}
+          </span>
+        </div>
+
+        {/* Actions */}
+        <div
+          className="
+          flex justify-end gap-2
+          opacity-0 group-hover:opacity-100
+          transition"
+        >
+
+          <button
+            onClick={() => {
+              setSelectedNote(note);
+              viewSlide();
+            }}
+            className="
+            p-2 rounded-lg
+            bg-blue-50 text-[#0d47a1]
+            hover:bg-blue-100"
+            title="View"
+          >
+            <FaEye />
+          </button>
+
+          <button
+            onClick={() => {
+              setSelectedNote(note);
+              handleUpdate();
+            }}
+            className="
+            p-2 rounded-lg
+            bg-green-50 text-green-600
+            hover:bg-green-100"
+            title="Edit"
+          >
+            <FaEdit />
+          </button>
+
+          <button
+            onClick={() => {
+              setSelectedId(note._id);
+              handleDelete();
+            }}
+            className="
+            p-2 rounded-lg
+            bg-red-50 text-red-600
+            hover:bg-red-100"
+            title="Delete"
+          >
+            <FaTrash />
+          </button>
+
+        </div>
+
+      </div>
+    ))}
+
+  </div>
+
+</main>
+
     </div>
   );
 };
