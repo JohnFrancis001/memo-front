@@ -6,27 +6,17 @@ const AddNote = ({ addSlide, addOpen, fetchNotes }) => {
 
   const [data, setData] = useState({
     title: "",
-    description: ""
+    description: "",
+    file: null
   });
-
-  const [file, setFile] = useState(null);
 
   const Add = async (e) => {
     e.preventDefault();
 
     try {
-      const formData = new FormData();
-
-      formData.append("title", data.title);
-      formData.append("description", data.description);
-
-      if (file) {
-        formData.append("file", file);
-      }
-
       await axios.post(
         `${import.meta.env.VITE_API_URL}/note/add`,
-        formData,
+        data,
         {
           withCredentials: true,
           headers: {
