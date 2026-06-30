@@ -10,14 +10,12 @@ const UpdateNote = ({ fetchNotes, selectedNote, updateSlide, updateOpen }) => {
     description: ""
   });
 
-  const [file, setFile] = useState(null);
-
   // Load selected note data
   useEffect(() => {
     if (selectedNote) {
       setData({
         title: selectedNote.title || "",
-        description: selectedNote.description || "",
+        description: selectedNote.description || ""
       });
     }
   }, [selectedNote]);
@@ -27,31 +25,20 @@ const UpdateNote = ({ fetchNotes, selectedNote, updateSlide, updateOpen }) => {
     e.preventDefault();
 
     try {
-      const formData = new FormData();
-
-      formData.append("title", data.title);
-      formData.append("description", data.description);
-
-      if (file) {
-        formData.append("file", file);
-      }
-
+      
       await axios.put(
         `${import.meta.env.VITE_API_URL}/note/update/${selectedNote._id}`,
-        formData,
+        data,
         {
           withCredentials: true,
             headers: {
-              "Content-Type": "multipart/form-data"
+              "Content-Type": "application/json"
             }
         }
       );
 
       updateSlide();
       fetchNotes();
-
-      // Reset File After Update
-      setFile(null);
 
     } catch (error) {
       console.log(error);
@@ -172,7 +159,6 @@ const UpdateNote = ({ fetchNotes, selectedNote, updateSlide, updateOpen }) => {
           <input
             type="file"
             name="file"
-            onChange={(e) => setFile(e.target.files[0])}
             className="
             border rounded-lg
             px-3 py-2
